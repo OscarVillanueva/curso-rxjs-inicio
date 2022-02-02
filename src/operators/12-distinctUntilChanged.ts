@@ -1,4 +1,10 @@
-import { distinctUntilKeyChanged, from } from "rxjs";
+import { distinctUntilChanged, from, of } from "rxjs";
+
+of(1,1,1,3,3,2,2,4,4,5,3,1)
+  .pipe(
+    distinctUntilChanged()
+  )
+  .subscribe(console.log)
 
 interface Person {
   name: string
@@ -18,6 +24,6 @@ const people: Person[] = [
 
 from(people)
   .pipe(
-    distinctUntilKeyChanged('name')
+    distinctUntilChanged( (prev, current) => prev.name === current.name )
   )
   .subscribe( console.log )

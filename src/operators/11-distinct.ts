@@ -1,4 +1,10 @@
-import { distinctUntilKeyChanged, from } from "rxjs";
+import { distinct, from, of } from "rxjs";
+
+of(1,1,1,3,3,2,2,4,4,5,3,1)
+  .pipe(
+    distinct()
+  )
+  .subscribe(console.log)
 
 interface Person {
   name: string
@@ -6,18 +12,18 @@ interface Person {
 
 const people: Person[] = [
   { name: 'Javier' },
-  { name: 'Javier' },
+  { name: 'Lucía' },
   { name: 'X' },
   { name: 'Roberto' },
   { name: 'Andrea' },
   { name: 'X' },
-  { name: 'X' },
+  { name: 'Luis' },
   { name: 'Javier' },
   { name: 'Lucía' },
 ]
 
 from(people)
   .pipe(
-    distinctUntilKeyChanged('name')
+    distinct( person => person.name )
   )
   .subscribe( console.log )
