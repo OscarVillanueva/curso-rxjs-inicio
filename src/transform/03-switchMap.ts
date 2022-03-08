@@ -1,6 +1,6 @@
-import { fromEvent, debounceTime, map, Observable } from 'rxjs';
+import { fromEvent, debounceTime, map, Observable, skip } from 'rxjs';
 import { ajax } from 'rxjs/ajax';
-import { pluck, mergeAll } from 'rxjs/operators';
+import { pluck, switchMap, mergeMap, filter } from 'rxjs/operators';
 import { GithubUser, GithubUsers } from '../interfaces/index';
 
 // References
@@ -40,14 +40,21 @@ const showUsers = (users: GithubUser[]) : void=> {
 // Streams
 const input$ = fromEvent<KeyboardEvent>(textInput, 'keyup')
 
-// Lo que hace es mezclar todos los observables internos o devueltos se mezclan al final en 
-// un solo observable
 input$.pipe(
   debounceTime(500),
   map<KeyboardEvent, string>(({ target }) => target['value']),
-  map<string, Observable<GithubUsers>>(
+  mergeMap<string, Observable<GithubUsers>>(
     text => ajax.getJSON(`https://api.github.com/search/users?q=${text}`)
   ),
-  mergeAll<Observable<GithubUsers>>(),
   map<GithubUsers, GithubUser[]>(({ items }) => items)
-).subscribe(showUsers)
+)
+
+const url = 'https://httpbin.org/delay/1?arg=';
+
+// switchMap lo que hace es si hay observables anterior los cancela o solo mantiene
+// la ultima subscription
+input$.pipe(
+  map<KeyboardEvent, string>(({ target }) => target['value']),
+  filter(value => value.trim() !== ''),
+  switchMap( text => ajax.getJSON(url + text) )
+).subscribe( console.log )

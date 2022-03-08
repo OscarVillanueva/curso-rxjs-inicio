@@ -1,7 +1,7 @@
 // Terminar el observable cuando el primer cumpla la condición
 import { first, fromEvent, pluck } from "rxjs";
 
-// No emite el valor esta que cumpla la emisión
+// No emite el valor esta que cumpla la condición
 fromEvent<MouseEvent>( document, 'click')
   .pipe(
     pluck('clientY'),
